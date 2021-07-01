@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:shop/data/dummy_data.dart';
 import 'package:shop/exceptions/http_exceptions.dart';
 import 'package:shop/providers/product.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +7,7 @@ import 'package:shop/utils/constants.dart';
 
 class Products with ChangeNotifier {
   final String _baseUrl = "${Constants.BASE_API_URL}/products";
+  String _token;
   List<Product> _items = [];
 
   List<Product> get items => [..._items];
@@ -19,8 +16,9 @@ class Products with ChangeNotifier {
     return _items.where((prod) => prod.isFavorite).toList();
   }
 
+  Products(this._token, this._items);
   Future<void> loadProducts() async {
-    final response = await http.get('$_baseUrl.json');
+    final response = await http.get('$_baseUrl.json?auth=$_token');
 
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
